@@ -1,0 +1,83 @@
+<html>
+    <head>
+        <title>jQuery.parseQuery.js</title>
+        <script type="text/javascript" src="jquery-1.4.2.js"></script>
+        <script type="text/javascript" src="../jquery.parsequery.js"></script>
+    </head>
+    <body>
+        <table>
+            <tr><th>Input</th><th>Output</th><th>Expected</th></tr>
+
+            <script type="text/javascript">
+                function test(input, expected, method) {
+                    method = method ? method : 'parseQuery';
+                    var output = jQuery[method](input),
+                        color = (JSON.stringify(output) == JSON.stringify(expected) ? '#DDFFDD' : '#FFDDDD');
+                    document.writeln("<tr style=\"background-color:" + (color) + "\"><td>" + JSON.stringify(input) + "</td><td>" + JSON.stringify(output) + "</td><td>" + JSON.stringify(expected) + "</td></tr>");
+                }
+
+                test("?a=b&c=d", {a:'b', c:'d'});
+                test("?a=b&a=c", {a:'c'});
+                test("a=b&c=d&c=e", {a:'b', c:'e'});
+                test("?a&b=c&=d&e=", {'a':'','b':'c','':'d','e':''});
+                test("?a+b=c%2Bd&%C3%A6=ae", {'a b':'c+d','\u00e6':'ae'});
+                test("?a=b=c&%3D=%26", {'a':'b=c', '=':'&'});
+                test({"query": "a[]=b&a[]=c&d=e&d=f", "array_keys": /\[\]$/}, {'a[]':['b','c'], 'd':'f'});
+                $.parseQuery.array_keys = /^(ids|names)$/;
+                test("ids=1&names=foo&names=bar",{'ids':['1'],'names':['foo','bar']});
+                $.parseQuery.array_keys = {test:function(){ return false; }};
+                test({query: "id[]=1&id[]=2",
+                              array_keys: /^ids$/,
+                              decode: function (input, context) {
+                                  input = this.default_decode(input);
+                                  if (context === null) {
+                                      return input.replace(/\[\]$/, 's')
+                                  } else if (context === "ids") {
+                                      input = parseInt(input);
+                                      if (isNaN(input)) {
+                                          throw URIError("id was not a number");
+                                      }
+                                  }
+                                  return input;
+                              }}, {'ids':[1, 2]});
+
+                        $.parseQuery.decode = function (input, context) {
+                              input = this.default_decode(input);
+                              if(context && this.int_keys.test(context)) {
+                                  input = parseInt(input);
+                              }
+                              return input;
+                          }
+                          test({int_keys: /_id$/, query: "a_id=1&b_id=2"}, {'a_id':1, 'b_id':2});
+
+                        $.parseQuery.decode = $.parseQuery.default_decode;
+
+                        test({query: "a=b;c=d", separator: ";"}, {a:'b', c:'d'});
+                        test({query: "a=b;c=d&e=f", separator: /[;&]/}, {a:'b', c:'d', e:'f'});
+                        test({query: "a=b;c=d"}, {a:'b;c=d'});
+
+                        jQuery.parseOptionQuery = function (options) {
+                             var params = $.parseQuery(options);
+                             $.each($.parseQuery(options), function (key, value) {
+                                var obj = params,
+                                    parts = key.replace(/\]/g, '').replace(/\[$/, '').split('['),
+                                    last = parts.pop();
+                                delete params[key];
+                                $.each(parts, function (i, part) {
+                                    obj = obj[part] = obj[part] ? obj[part] : {};
+                                });
+                                obj[last] = value;
+                             });
+                             return params;
+                         }
+                        test("a[b]=c&d=e", {'a':{'b':'c'}, 'd':'e'}, 'parseOptionQuery');
+                        test({query: "a[b]=c&a[b]=d&a[e]=f",array_keys: /a\[b\]/}, {'a': {'b':['c','d'],'e':'f'}}, 'parseOptionQuery');
+
+                        test("a[a]=1&a[b][c]=[2]&d=2", {a:{a:"1", b:{c:"[2]"}}, d:"2"}, 'parseOptionQuery');
+                        jQuery.parseQuery = $.parseQuery.original;
+
+            </script>
+
+        </table>
+    </body>
+</html>
