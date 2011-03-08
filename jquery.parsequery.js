@@ -21,7 +21,7 @@
         $.each(config.query.split(config.separator), function (i, param) {
             var pair = param.split('='),
                 key = config.decode(pair.shift(), null).toString(),
-                value = config.decode(pair ? pair.join('=') : null, key);
+                value = config.decode(pair.length ? pair.join('=') : null, key);
 
             if (config.array_keys.test(key)) {
                 params[key] = params[key] || [];
