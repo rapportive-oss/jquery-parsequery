@@ -23,7 +23,7 @@
                 key = config.decode(pair.shift(), null).toString(),
                 value = config.decode(pair.length ? pair.join('=') : null, key);
 
-            if (config.array_keys.test(key)) {
+            if (config.array_keys(key)) {
                 params[key] = params[key] || [];
                 params[key].push(value);
             } else {
@@ -35,8 +35,8 @@
     $.parseQuery.decode = $.parseQuery.default_decode = function (string) {
         return decodeURIComponent((string || "").replace('+', ' '));
     };
-    $.parseQuery.array_keys = {test: function () {
+    $.parseQuery.array_keys = function () {
         return false;
-    }};
+    };
     $.parseQuery.separator = "&";
 }(jQuery));

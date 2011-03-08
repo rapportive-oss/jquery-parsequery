@@ -43,7 +43,7 @@ Multi-valued Parameters
 
 The encoding mechanism allows for keys in query strings to be associated with multiple values.
 
-If you wish to specify that some keys have multiple values, you can provide an options Object with an "array_keys" key that is a regular expression:
+If you wish to specify that some keys have multiple values, you can provide an options Object with an "array_keys" key that is a regular expression, or a function:
 
     $.parseQuery({
         query: "a[]=b&a[]=c&d=e&d=f",
