@@ -10,10 +10,18 @@
 
             <script type="text/javascript">
                 function test(input, expected, method) {
-                    method = method ? method : 'parseQuery';
-                    var output = jQuery[method](input),
-                        color = (JSON.stringify(output) == JSON.stringify(expected) ? '#DDFFDD' : '#FFDDDD');
-                    document.writeln("<tr style=\"background-color:" + (color) + "\"><td>" + JSON.stringify(input) + "</td><td>" + JSON.stringify(output) + "</td><td>" + JSON.stringify(expected) + "</td></tr>");
+                    var output, color
+                    
+                    try {
+                        method = method ? method : 'parseQuery';
+                        output = JSON.stringify(jQuery[method](input))
+                        color = output == JSON.stringify(expected) ? '#DDFFDD' : '#FFDDDD';
+                    } catch (e) {
+                        output = 'Error: ' + e.message
+                        color = '#FFDDDD'
+                    }
+                    
+                    document.writeln("<tr style=\"background-color:" + (color) + "\"><td>" + JSON.stringify(input) + "</td><td>" + output + "</td><td>" + JSON.stringify(expected) + "</td></tr>");
                 }
 
                 test("?a=b&c=d", {a:'b', c:'d'});
