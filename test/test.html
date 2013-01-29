@@ -10,10 +10,18 @@
 
             <script type="text/javascript">
                 function test(input, expected, method) {
-                    method = method ? method : 'parseQuery';
-                    var output = jQuery[method](input),
-                        color = (JSON.stringify(output) == JSON.stringify(expected) ? '#DDFFDD' : '#FFDDDD');
-                    document.writeln("<tr style=\"background-color:" + (color) + "\"><td>" + JSON.stringify(input) + "</td><td>" + JSON.stringify(output) + "</td><td>" + JSON.stringify(expected) + "</td></tr>");
+                    var output, color
+                    
+                    try {
+                        method = method ? method : 'parseQuery';
+                        output = JSON.stringify(jQuery[method](input))
+                        color = output == JSON.stringify(expected) ? '#DDFFDD' : '#FFDDDD';
+                    } catch (e) {
+                        output = 'Error: ' + e.message
+                        color = '#FFDDDD'
+                    }
+                    
+                    document.writeln("<tr style=\"background-color:" + (color) + "\"><td>" + JSON.stringify(input) + "</td><td>" + output + "</td><td>" + JSON.stringify(expected) + "</td></tr>");
                 }
 
                 test("?a=b&c=d", {a:'b', c:'d'});
@@ -22,6 +30,7 @@
                 test("?a&b=c&=d&e=", {'a':'','b':'c','':'d','e':''});
                 test("?a+b=c%2Bd&%C3%A6=ae", {'a b':'c+d','\u00e6':'ae'});
                 test("?a=b=c&%3D=%26", {'a':'b=c', '=':'&'});
+                test("?a=b+c+d", {'a':'b c d'});
                 test({"query": "a[]=b&a[]=c&d=e&d=f", "array_keys": /\[\]$/}, {'a[]':['b','c'], 'd':'f'});
                 $.parseQuery.array_keys = /^(ids|names)$/;
                 test("ids=1&names=foo&names=bar",{'ids':['1'],'names':['foo','bar']});
