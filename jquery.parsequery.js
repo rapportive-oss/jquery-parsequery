@@ -23,7 +23,7 @@
                 key = config.decode(pair.shift(), null).toString(),
                 value = config.decode(pair.length ? pair.join('=') : null, key);
 
-            if (config.array_keys(key)) {
+            if (config.array_keys.test ? config.array_keys.test(key) : config.array_keys(key)) {
                 params[key] = params[key] || [];
                 params[key].push(value);
             } else {
