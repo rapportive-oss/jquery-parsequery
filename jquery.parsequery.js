@@ -33,7 +33,7 @@
         return params;
     };
     $.parseQuery.decode = $.parseQuery.default_decode = function (string) {
-        return decodeURIComponent((string || "").replace('+', ' '));
+        return decodeURIComponent((string || "").replace(/\+/g, ' '));
     };
     $.parseQuery.array_keys = function () {
         return false;
