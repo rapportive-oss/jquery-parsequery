@@ -39,4 +39,4 @@
         return false;
     };
     $.parseQuery.separator = "&";
-}(jQuery));
+}(window.jQuery || window.Zepto));
