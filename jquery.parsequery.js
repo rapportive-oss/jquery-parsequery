@@ -18,18 +18,20 @@
         $.extend(config, $.parseQuery, options);
         config.query = config.query.replace(/^\?/, '');
 
-        $.each(config.query.split(config.separator), function (i, param) {
-            var pair = param.split('='),
-                key = config.decode(pair.shift(), null).toString(),
-                value = config.decode(pair.length ? pair.join('=') : null, key);
+        if (config.query.length > 0) {
+            $.each(config.query.split(config.separator), function (i, param) {
+                var pair = param.split('='),
+                    key = config.decode(pair.shift(), null).toString(),
+                    value = config.decode(pair.length ? pair.join('=') : null, key);
 
-            if (config.array_keys.test ? config.array_keys.test(key) : config.array_keys(key)) {
-                params[key] = params[key] || [];
-                params[key].push(value);
-            } else {
-                params[key] = value;
-            }
-        });
+                if (config.array_keys.test ? config.array_keys.test(key) : config.array_keys(key)) {
+                    params[key] = params[key] || [];
+                    params[key].push(value);
+                } else {
+                    params[key] = value;
+                }
+            });
+        }
         return params;
     };
     $.parseQuery.decode = $.parseQuery.default_decode = function (string) {
