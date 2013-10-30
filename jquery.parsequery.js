@@ -18,8 +18,8 @@
         $.extend(config, $.parseQuery, options);
         config.query = config.query.replace(/^\?/, '');
 
-        if (config.query.length > 0) {
-            $.each(config.query.split(config.separator), function (i, param) {
+        if (config.query) {
+            $.map(config.query.split(config.separator), function (param) {
                 var pair = param.split('='),
                     key = config.decode(pair.shift(), null).toString(),
                     value = config.decode(pair.length ? pair.join('=') : null, key);
